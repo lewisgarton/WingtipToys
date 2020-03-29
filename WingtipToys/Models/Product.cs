@@ -22,7 +22,7 @@ namespace WingtipToys.Models
         [Display(Name = "Price")]
         public double? UnitPrice { get; set; }
 
-        public int? CatagoryID { get; set; }
+        public int? CategoryID { get; set; }
 
         public virtual Category Category { get; set; }
     }
