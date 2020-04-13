@@ -16,14 +16,15 @@ namespace WingtipToys.Logic
 
         public void AddToCart(int id)
         {
-            // Get product key from database
+     
             ShoppingCartId = GetCartId();
 
+            // check if item already in cart
             var cartItem = _db.ShoppingCartItems.SingleOrDefault(
                 c => c.CartId == ShoppingCartId &&
                 c.ProductId == id);
 
-            // create new cart if none exsists
+            // add item to cart or increment
             if (cartItem == null)
             {
                 cartItem = new CartItem
@@ -46,8 +47,33 @@ namespace WingtipToys.Logic
             _db.SaveChanges();
         }
         
+        public void RemoveFromCart(int id)
+        {
+            ShoppingCartId = GetCartId();
+
+            // check if item is in the cart
+            var cartItem = _db.ShoppingCartItems.SingleOrDefault(
+                c => c.CartId == ShoppingCartId &&
+                c.ProductId == id);
+            
+            // remove item from cart if quantity is 1, else decrement quantity
+            if (cartItem != null)
+            {
+                if (cartItem.Quantity > 1)
+                {
+                    cartItem.Quantity--;
+                }
+                else
+                {
+                    _db.ShoppingCartItems.Remove(cartItem);
+                }
+            }
+            _db.SaveChanges();
+        }
+
         public string GetCartId()
         {
+            // check for cart id in current session, if none create one
             if (HttpContext.Current.Session[CartSessionKey] == null)
             {
                 if (!string.IsNullOrWhiteSpace(HttpContext.Current.User.Identity.Name))
